@@ -16,6 +16,8 @@ class _TrafficScreenState extends State<TrafficScreen> {
   final List<double> _latitude = <double>[];
   final List<double> _longitude = <double>[];
   final List<String> _cameraID = <String>[];
+  final List<int> _imgHeight = <int>[];
+  final List<int> _imgWidth = <int>[];
 
   @override
   void initState() {
@@ -37,6 +39,8 @@ class _TrafficScreenState extends State<TrafficScreen> {
     _cameraImage.clear();
     _latitude.clear();
     _longitude.clear();
+    _imgHeight.clear();
+    _imgWidth.clear();
   }
 
   Future<dynamic> _getTrafficData() async {
@@ -55,53 +59,50 @@ class _TrafficScreenState extends State<TrafficScreen> {
 
   void updateUI(dynamic cameraData) {
     _cameraInfoListRest();
-    for (int i = 0; i < cameraData.items
-        .elementAt(0)
-        .cameras
-        .length; i++) {
-      print('CameraID: ' +
-          cameraData.items
-              .elementAt(0)
-              .cameras
-              .elementAt(i)
-              .cameraId);
-      print('CameraImage: ' +
-          cameraData.items
-              .elementAt(0)
-              .cameras
-              .elementAt(i)
-              .image);
-      print('CameraLocation: \n');
-      print('Latitude: ' +
-          cameraData.items
-              .elementAt(0)
-              .cameras
-              .elementAt(i)
-              .location
-              .latitude
-              .toString());
-      print('Longitude: ' +
-          cameraData.items
-              .elementAt(0)
-              .cameras
-              .elementAt(i)
-              .location
-              .longitude
-              .toString());
+    for (int i = 0; i < cameraData.items.elementAt(0).cameras.length; i++) {
+//      print('CameraID: ' +
+//          cameraData.items.elementAt(0).cameras.elementAt(i).cameraId);
+//      print('CameraImage: ' +
+//          cameraData.items.elementAt(0).cameras.elementAt(i).image);
+//      print('CameraLocation: \n');
+//      print('Latitude: ' +
+//          cameraData.items
+//              .elementAt(0)
+//              .cameras
+//              .elementAt(i)
+//              .location
+//              .latitude
+//              .toString());
+//      print('Longitude: ' +
+//          cameraData.items
+//              .elementAt(0)
+//              .cameras
+//              .elementAt(i)
+//              .location
+//              .longitude
+//              .toString());
+//      print('ImgHeight: ' +
+//          cameraData.items
+//              .elementAt(0)
+//              .cameras
+//              .elementAt(i)
+//              .imageMetadata
+//              .height
+//              .toString());
+//      print('ImgWidth: ' +
+//          cameraData.items
+//              .elementAt(0)
+//              .cameras
+//              .elementAt(i)
+//              .imageMetadata
+//              .width
+//              .toString());
 
       setState(() {
         _cameraImage
-            .add(cameraData.items
-            .elementAt(0)
-            .cameras
-            .elementAt(i)
-            .image);
+            .add(cameraData.items.elementAt(0).cameras.elementAt(i).image);
         _cameraID
-            .add(cameraData.items
-            .elementAt(0)
-            .cameras
-            .elementAt(i)
-            .cameraId);
+            .add(cameraData.items.elementAt(0).cameras.elementAt(i).cameraId);
         _latitude.add(cameraData.items
             .elementAt(0)
             .cameras
@@ -114,11 +115,24 @@ class _TrafficScreenState extends State<TrafficScreen> {
             .elementAt(i)
             .location
             .longitude);
+        _imgHeight.add(cameraData.items
+            .elementAt(0)
+            .cameras
+            .elementAt(i)
+            .imageMetadata
+            .height);
+        _imgWidth.add(cameraData.items
+            .elementAt(0)
+            .cameras
+            .elementAt(i)
+            .imageMetadata
+            .width);
       });
     }
   }
 
-  Widget _getCard(String url, String id, double lat, double long, int count) {
+  Widget _getCard(String url, String id, double lat, double long, int count,
+      int imgHeight, int imgWidth) {
     return Card(
         child: Container(
       height: 270,
@@ -142,6 +156,8 @@ class _TrafficScreenState extends State<TrafficScreen> {
             child: Image.network(
               '$url',
               fit: BoxFit.fill,
+              height: imgHeight.toDouble(),
+              width: imgWidth.toDouble(),
             ),
           )
         ],
@@ -149,55 +165,123 @@ class _TrafficScreenState extends State<TrafficScreen> {
     ));
   }
 
-  Widget _getImages() {
-    return ListView.builder(
-        padding: const EdgeInsets.all(0),
-        itemBuilder: (BuildContext _context, int _position) {
-          if(_cameraImage.length == 0){
-            return Card(
-                child: Container(
-                  height: 320,
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        Text(
-                          'No Image, Please press update button.',
-                        ),
-                        Image.asset('images/no_photo.png', fit: BoxFit.cover,),
-                      ]
-                  ),
-                )
-            );
-          }
-          if (_position.isOdd) {
-            return Divider();
-          }
-          final int index = _position ~/ 2;
-          // If you've reached the end of the available urls...
-          if (index >= _cameraImage.length) {
-            print('End of images num: $index, Position num: $_position');
-            return Card(
-                child: Container(
-                  height: 420,
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        Text(
-                          'No More Images, Please press update button again.',
-                          //style: Theme.of(context).textTheme.display1,
-                        ),
-                        Image.asset('images/no_more.jpg', fit: BoxFit.cover,),
-                      ]
-                  ),
-                )
-            );
-          }
+//  Widget _getImages() {
+//    return ListView.builder(
+//        padding: const EdgeInsets.all(0),
+//        //physics: FixedExtentScrollPhysics(),
+//        itemBuilder: (BuildContext _context, int _position) {
+//          final int index = _position ~/ 2;
+//          if (_position.isOdd) {
+//            return Divider();
+//          }
+//
+//          if (_cameraImage.length == 0) {
+//            return Card(
+//                child: Container(
+//              height: 320,
+//              child: Column(
+//                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                  crossAxisAlignment: CrossAxisAlignment.stretch,
+//                  children: <Widget>[
+//                    Text(
+//                      'No Image, Please press update button.',
+//                    ),
+//                    Image.asset(
+//                      'images/no_photo.png',
+//                      fit: BoxFit.cover,
+//                    ),
+//                  ]),
+//            ));
+//          } else if (index >= _cameraImage.length) {
+//            //If you've reached the end of the list of cameraImages,
+//            print('End of images num: $index, Position num: $_position');
+//            return Card(
+//                child: Container(
+//              height: 420,
+//              child: Column(
+//                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                  crossAxisAlignment: CrossAxisAlignment.stretch,
+//                  children: <Widget>[
+//                    Text(
+//                      'No More Images, Please press update button again.',
+//                      //style: Theme.of(context).textTheme.display1,
+//                    ),
+//                    Image.asset(
+//                      'images/no_more.jpg',
+//                      fit: BoxFit.cover,
+//                    ),
+//                  ]),
+//            ));
+//          }
+//
+//          return _getCard(
+//              _cameraImage[index],
+//              _cameraID[index],
+//              _latitude[index],
+//              _longitude[index],
+//              index + 1,
+//              _imgHeight[index],
+//              _imgWidth[index]);
+//        });
+//  }
 
-          return _getCard(_cameraImage[index], _cameraID[index],
-              _latitude[index], _longitude[index], index + 1);
-        });
+  Widget _getImages() {
+    if (_cameraImage.length == 0) {
+      return Card(
+          child: Container(
+        height: 320,
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Text(
+                'No Image, Please press update button.',
+                //style: Theme.of(context).textTheme.display1,
+              ),
+              Image.asset(
+                'images/no_photo.png',
+                fit: BoxFit.cover,
+              ),
+            ]),
+      ));
+    } else if (_cameraImage.length < 86) {
+      return ListView.builder(
+          padding: const EdgeInsets.all(0),
+          //physics: FixedExtentScrollPhysics(),
+          itemBuilder: (BuildContext _context, int _position) {
+            final int index = _position ~/ 2;
+            if (_position.isOdd) {
+              return Divider();
+            }
+            return _getCard(
+                _cameraImage[index],
+                _cameraID[index],
+                _latitude[index],
+                _longitude[index],
+                index + 1,
+                _imgHeight[index],
+                _imgWidth[index]);
+          });
+    } else if (_cameraImage.length > 86) {
+      //If you've reached the end of the list of cameraImages,
+      return Card(
+          child: Container(
+        height: 420,
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Text(
+                'No More Images, Please press update button again.',
+                //style: Theme.of(context).textTheme.display1,
+              ),
+              Image.asset(
+                'images/no_more.jpg',
+                fit: BoxFit.cover,
+              ),
+            ]),
+      ));
+    }
   }
 
   @override
@@ -206,11 +290,10 @@ class _TrafficScreenState extends State<TrafficScreen> {
       appBar: AppBar(
         title: Text('🤑 SG Traffic Images 💀'),
       ),
-      body:
-          Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
+      body: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
             Container(
               height: 30.0,
               alignment: Alignment.center,
@@ -221,14 +304,13 @@ class _TrafficScreenState extends State<TrafficScreen> {
                   var cameraData = await _getTrafficData();
                   updateUI(cameraData);
                 },
-                tooltip: 'Display',
+                tooltip: 'Download Photos',
                 icon: Icon(Icons.visibility),
                 label: Text("UPDATE"),
               ),
             ),
             Expanded(
-              child:
-              _getImages(),
+              child: _getImages(),
             ),
           ]),
     );
